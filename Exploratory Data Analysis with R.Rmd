@@ -1,0 +1,88 @@
+```{r}
+df <- read.csv("D:/Jurnal/Data Science/Data Cleaning in R/train.csv")
+```
+
+```{r}
+#import Library
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+View(df)
+```
+
+1. Number of House Style Sold
+```{r}
+df %>%
+  count(HouseStyle) %>%
+  ggplot(aes( reorder(x = HouseStyle, n), y = n)) +
+  geom_bar(stat ="identity", fill ="orange") +
+  geom_label(aes(label=n)) +
+  ggtitle("Number of House Style Sold")+
+  xlab("House Style")+
+  ylab("Unit Sold")+
+  theme(axis.title.x = element_text(family = "arial", size = 12))+
+  theme(axis.title.y = element_text(family = "arial", size = 12))
+
+```
+Insight 1: 1 Story house is the most sold house in Ames
+Insight 2: 2.5 fin house is the least sold house in Ames
+Insight 3: 2 Story house is the second most sold house in Ames
+Insight 4: 1 story and 2 story house is the most sold house in Ames
+
+
+2. Difference of Fondation across Year Build
+```{r}
+df %>%
+  ggplot(aes(x = YearBuilt))+
+  geom_density(aes(fill = factor(Foundation)), alpha = 0.5)+
+  ggtitle("Difference of fondation across Year Build")+
+  xlab("Year Built")+
+  theme(axis.title.x = element_text(family = "arial", size = 12))+
+  theme(axis.title.y = element_text(family = "arial", size = 12))
+```
+Insight 1: Most of the house built around 1900 used stone as fondation
+Insight 2: Number of house built with stone fondation started to dissappear in 1980
+Insight 3: Currently most used fondation is concrete
+Insight 4: Brick tile fondation started to replace stone fondation around 1930
+
+
+3. House Price Based on Rating
+```{r}
+df%>%
+  #3.Membuat rating rumah berdasarkan overall quality
+  mutate( Rating = case_when(
+    OverallQual <= 2 ~ "Poor",
+    OverallQual >2 & OverallQual <= 4 ~ "Fair",
+    OverallQual >4 & OverallQual <= 6 ~ "Good",
+    OverallQual >6 & OverallQual <= 8 ~ "Satisfactory",
+    OverallQual >8 & OverallQual <= 10 ~ "Exellent", ))%>%
+  ggplot(aes(x = reorder(Rating, SalePrice), y = SalePrice)) +
+  geom_boxplot(fill = "orange")+
+  ggtitle("House Sale Price Based on Rating")+
+  xlab("Rating")+
+  ylab("Sale Price")+
+  theme(axis.title.x = element_text(family = "arial", size = 12))+
+  theme(axis.title.y = element_text(family = "arial", size = 12))
+
+```
+Insight 1: House with rank exellent is the most expensive house
+Insight 2: House with rank poor is the least expensive house
+Insight 3: House with rank exellent is the most bought house
+Insight 4: house with rank exellent tend to have more variative price
+
+4. House Price Based on Garage Area Size across Different Sale Condition
+```{r}
+df %>%
+  ggplot(aes(x = GarageArea, y = SalePrice, alpha = 0.7))+
+  geom_point()+
+  geom_smooth(method = 'lm', se = FALSE)+
+  facet_wrap("SaleCondition")+
+  ggtitle("House Price based on Garage Area Size across different Sale Condition")+
+  xlab("Garage Area Size")+
+  ylab("Sale Price")+
+  theme(axis.title.x = element_text(family = "arial", size = 12))+
+  theme(axis.title.y = element_text(family = "arial", size = 12))
+
+```
+Insight 1: The larger the garage area, the more expensive a house would be
+Insight 2: if the house sale is held among family members, the price tend to be cheaper
